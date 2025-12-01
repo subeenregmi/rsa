@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use rand::Rng;
+
 pub fn factor(n: u32) -> HashSet<u32> {
     let mut factors = HashSet::new();
 
@@ -106,4 +108,63 @@ pub fn sieve_of_eratosthenes(n: u32) -> Vec<u32> {
     }
 
     primes
+}
+
+pub fn fermat_primality_test(n: u32, k: u32) -> bool {
+    let mut rng = rand::rng();
+
+    for _ in 0..k {
+        let a = rng.random_range(1..n);
+        if mod_exp(a, n - 1, n) != 1 {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+pub fn miller_rabin_test(n: u32, k: u32) -> bool {
+    let mut rng = rand::rng();
+
+    let mut s = 0;
+    let mut d = n - 1;
+    while (d % 2) == 0 {
+        s += 1;
+        d /= 2;
+    }
+
+    println!("{} = 2^{}*{}", n - 1, s, d);
+
+    for _ in 0..k {
+        let a = rng.random_range(1..n);
+
+        let first = mod_exp(a, d, n) == 1;
+
+        let second = {
+            let mut temp = mod_exp(a, d, n);
+
+            if temp == n - 1 {
+                true
+            } else {
+                let mut result = false;
+
+                for _ in 1..s {
+                    temp = mod_exp(temp, 2, n);
+
+                    if temp == n - 1 {
+                        result = true;
+                        break;
+                    }
+                }
+
+                result
+            }
+        };
+
+        if !first && !second {
+            return false;
+        }
+    }
+
+    return true;
 }

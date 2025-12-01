@@ -20,4 +20,12 @@ fn main() {
     let primes = maths::sieve_of_eratosthenes(1_000_000);
 
     println!("{}", primes.len());
+
+    let choice = rand::random_range(0..primes.len());
+
+    println!(
+        "is prime -f : {}, is prime -mr : {}",
+        maths::fermat_primality_test(primes[choice], 1000),
+        maths::miller_rabin_test(primes[choice], 1000)
+    )
 }
